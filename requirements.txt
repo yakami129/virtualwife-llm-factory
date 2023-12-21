@@ -1,0 +1,13 @@
+py-cpuinfo
+python-dotenv
+pandas
+scikit-learn
+openpyxl
+datetime
+urllib3==1.24.3
+numpy
+openai==0.28
+langchain==0.0.176
+einops
+scipy
+deepspeed
