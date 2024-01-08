@@ -8,7 +8,6 @@ import os
 
 # 你的 Cookie 文本
 cookie_text = ""
-# 创建一个 Cookie 对象
 cookie = http.cookies.SimpleCookie()
 cookie.load(cookie_text)
 

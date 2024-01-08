@@ -17,4 +17,6 @@ virtualwife-llm-factory 是一个llm训练框架，用于解决虚拟角色训�
 
 # 初始化
 
-TODO
+```
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+```

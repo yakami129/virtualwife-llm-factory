@@ -18,7 +18,7 @@ try:
     import whisper
 except ImportError:
     print("check requirements: video_to_text/requirements_run_whisper.txt")
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device("cuda")
 from hanziconv import HanziConv
 from subprocess import CalledProcessError, run
 import numpy as np
