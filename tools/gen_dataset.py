@@ -62,6 +62,7 @@ ANSWER_OUTPUT_PROMPT = """
 
 
 class GenerateQuestion:
+
     client: BaseChatModel
 
     def __init__(self, client: BaseChatModel):
@@ -219,7 +220,7 @@ if __name__ == '__main__':
         "question_prompt": question_prompt,
         "output_path": "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/dataset",
         "azure_openai_url": "https://.com/",
-        "azure_openai_key": "b06a4a263d058832",
+        "azure_openai_key": "b06a4xxxxx",
         "azure_deployment_name": "gpt35o",
     }
 

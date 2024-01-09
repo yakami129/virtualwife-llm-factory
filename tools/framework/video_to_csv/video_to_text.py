@@ -136,7 +136,7 @@ class Video2Subtitles(object):
         return reduced_audio
 
 
-def run_whisper(args):
+def run_whisper(video2subtitles: Video2Subtitles, args):
     if args.verbose:
         print('runing whisper')
 
@@ -155,17 +155,5 @@ def run_whisper(args):
     # run whisper
     input_file = args.input_video
     srt_folder = args.srt_folder
-    result = Video2Subtitles().transcribe(input_file, srt_folder)
+    result = video2subtitles.transcribe(input_file, srt_folder)
     return result
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='video to chinese srt with medium ',
-        epilog='author:Aria(https://github.com/ariafyy)'
-    )
-    parser.add_argument("verbose", type=bool, action="store")
-    parser.add_argument('--input_video', default='input_file', type=str, required=True, help="video path")
-    parser.add_argument('--srt_folder', default='out_folder', type=str, required=True, help="srt path")
-    args = parser.parse_args()
-    run_whisper(args)
