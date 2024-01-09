@@ -4,6 +4,7 @@ import os
 import traceback
 from typing import Optional
 
+from tools.bilibili_video_to_csv_tool import BiliBiliVideo2CsvTool
 from tools.gen_dataset import GenerateDataset
 
 logger = logging.getLogger(__name__)
@@ -31,51 +32,37 @@ def load_args():
     parser.add_argument('--tool_name',
                         type=str,
                         required=True,
-                        help='工具名称，例如：gen_dataset_tool')
-    parser.add_argument('--batch',
-                        type=str,
-                        default="5",
-                        required=False,
-                        help='执行批次')
-    parser.add_argument('--batch_size',
-                        type=str,
-                        default="5",
-                        required=False,
-                        help='每批大小，控制chatgpt每次生成的数据量大小')
-    parser.add_argument('--example_path',
-                        type=str,
-                        required=False,
-                        help="示例文件位置，example.txt")
-    parser.add_argument('--work_dir_path',
-                        type=str,
-                        default="output",
-                        required=False,
-                        help='工作目录')
+                        help='工具名称，例如：bilibili_video_to_csv')
 
-    # azure openai 的配置
-    parser.add_argument('--azure_openai_url',
+    parser.add_argument('--video_ids',
                         type=str,
-                        default=False,
-                        help='azure_openai_url')
-    parser.add_argument('--azure_openai_key',
+                        default="",
+                        required=False,
+                        help='bilibili_video_to_csv - B站视频id，多个视频使用`,`分开')
+    parser.add_argument('--bilibili_cookie',
                         type=str,
-                        default=False,
-                        help='azure_openai_key')
-    parser.add_argument('--azure_deployment_name',
+                        default="",
+                        required=False,
+                        help='bilibili_video_to_csv - B站账号cookie')
+    parser.add_argument('--output_path',
                         type=str,
-                        default=False,
-                        help='azure_deployment_name')
+                        required=True,
+                        help="结果输出地址")
 
     return parser.parse_args()
 
 
-def init_gen_dataset_tool(config: Optional[dict], work_dir_path: str):
+def init_gen_dataset_tool(config: Optional[dict], output_path: str):
     example_path = config["example_path"]
     with open(example_path, 'r') as file:
         file_content = file.read()
     config["example"] = file_content
-    config["output_path"] = work_dir_path
+    config["output_path"] = output_path
     return GenerateDataset()
+
+
+def init_bilibili_video_to_csv_tool(config: Optional[dict], output_path: str):
+    return BiliBiliVideo2CsvTool()
 
 
 if __name__ == "__main__":
@@ -88,12 +75,14 @@ if __name__ == "__main__":
         # 构建config
         config = args.__dict__
 
-        work_dir_path = get_root_path(args.work_dir_path)
+        output_path = get_root_path(args.output_path)
 
         # 获取tool
         tool_name = config["tool_name"]
         if tool_name == 'gen_dataset_tool':
-            tool = init_gen_dataset_tool(config, work_dir_path)
+            tool = init_gen_dataset_tool(config, output_path)
+        elif tool_name == 'bilibili_video_to_csv':
+            tool = init_bilibili_video_to_csv_tool(config, output_path)
         else:
             raise ValueError(f"不存在 {tool_name} 工具")
 

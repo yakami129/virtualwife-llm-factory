@@ -6,10 +6,9 @@ import uuid
 
 import httpx
 from bilibili_api import Credential, video, HEADERS
-from pyparsing import Optional
 
-from framework.video_to_csv.srt2csv import srt2csv
-from framework.video_to_csv.video_to_text import run_whisper, Video2Subtitles
+from .framework.video_to_csv.srt2csv import srt2csv
+from .framework.video_to_csv.video_to_text import run_whisper, Video2Subtitles
 
 
 def generate():
@@ -95,7 +94,7 @@ class BiliBiliVideoDownload:
                     f.write(chunk)
 
 
-class BiliBiliVideo2Csv:
+class BiliBiliVideo2CsvTool:
     video_download: BiliBiliVideoDownload
     video2subtitles: Video2Subtitles
 
@@ -143,5 +142,5 @@ if __name__ == '__main__':
         "bilibili_cookie": "",
         "output_path": "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/output"
     }
-    video2csv = BiliBiliVideo2Csv()
+    video2csv = BiliBiliVideo2CsvTool()
     video2csv.run(args)
