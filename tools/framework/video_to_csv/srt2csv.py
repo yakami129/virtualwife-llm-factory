@@ -42,7 +42,7 @@ def render_csv(final_result, csv_file):
         os.remove(csv_file)
     with open(csv_file, 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        writer.writerow(["空白", "内容", "开始时间", "结束时间"])
+        writer.writerow(["角色名称", "内容", "开始时间", "结束时间"])
         for i in final_result:
             if not (i["Text"] and i["TimecodeIn"] and i["TimecodeOut"]):
                 # print(i)

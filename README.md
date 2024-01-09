@@ -43,7 +43,7 @@ python tools.py -h
 ## 示例一：bilibili_video_to_csv_tool
 
 - 工具说明：
-    - 作用：从B站下载视频，并且将视频中的内容转换为csv文件
+    - 作用：从B站下载视频，并且将视频中的内容转换为csv文件，输出的csv文件需要人工标注对话所属角色
     - 用途：准备角色训练集
 - 使用示例
 
@@ -52,6 +52,19 @@ python tools.py -h
  --video_ids BV1AC4y1U77e \
  --bilibili_cookie "<Your cookie>" \
  --output_path output
+```
+
+## 示例二：qa_csv2dataset_tool
+
+- 工具说明：
+    - 作用：将标记好的csv文件转换为标准数据集格式，方便fine-tuning
+    - 用途：准备角色训练集
+- 使用示例
+
+```shell
+python tools.py --tool_name qa_csv2dataset_tool \
+--csv_dir_path output/example \
+--output_path output
 ```
 
 # workflow.py 使用示例

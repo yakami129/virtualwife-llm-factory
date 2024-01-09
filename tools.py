@@ -6,6 +6,7 @@ from typing import Optional
 
 from tools.bilibili_video_to_csv_tool import BiliBiliVideo2CsvTool
 from tools.gen_dataset import GenerateDataset
+from tools.qa_csv2dataset_tool import QAcsv2datasetTool
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,13 @@ def load_args():
                         default="",
                         required=False,
                         help='bilibili_video_to_csv - B站账号cookie')
+
+    parser.add_argument('--csv_dir_path',
+                        type=str,
+                        default="",
+                        required=False,
+                        help='qa_csv2dataset_tool - csv文件夹地址')
+
     parser.add_argument('--output_path',
                         type=str,
                         required=True,
@@ -65,6 +73,10 @@ def init_bilibili_video_to_csv_tool(config: Optional[dict], output_path: str):
     return BiliBiliVideo2CsvTool()
 
 
+def init_qa_csv2dataset_tool(config: Optional[dict], output_path: str):
+    return QAcsv2datasetTool()
+
+
 if __name__ == "__main__":
 
     try:
@@ -83,6 +95,8 @@ if __name__ == "__main__":
             tool = init_gen_dataset_tool(config, output_path)
         elif tool_name == 'bilibili_video_to_csv':
             tool = init_bilibili_video_to_csv_tool(config, output_path)
+        elif tool_name == 'qa_csv2dataset_tool':
+            tool = init_qa_csv2dataset_tool(config, output_path)
         else:
             raise ValueError(f"不存在 {tool_name} 工具")
 
