@@ -42,7 +42,7 @@ class LLaMADataSetWriter(DataSetWrite):
 
     def writer(self, data, filename: str, output_path: str):
         # 转换数据格式
-        file_path = f"{output_path}/{filename}"
+        file_path = f"{output_path}/{filename}.json"
         output_data = []
         for index, row in data.iterrows():
             output_data.append({
@@ -89,8 +89,8 @@ class DataSetHandle:
 
 
 if __name__ == "__main__":
-    data_path = "/home/alan/Documents/decode/ai/virtualwife-llm-factory/output/新增数据集_2024-01-10-11-48-09.xlsx"
-    output_path = "/home/alan/Documents/decode/ai/virtualwife-llm-factory/output"
+    data_path = "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/output/新增数据集_2024-01-09-23-16-10.xlsx"
+    output_path = "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/output"
 
     # 初始化读取工具
     reader = DatasetReader()
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     writer_driver = DataSetWriterDriver()
 
     # 写入成rwkv格式
-    writer_driver.writer(type="rwkv", data=x_train,
+    writer_driver.writer(type="llama", data=x_train,
                          filename="train_dataset", output_path=output_path)
-    writer_driver.writer(type="rwkv", data=x_test,
+    writer_driver.writer(type="llama", data=x_test,
                          filename="test_dataset", output_path=output_path)
