@@ -38,6 +38,25 @@ class RWKVDataSetWriter(DataSetWrite):
         return file_path
 
 
+class LLaMADataSetWriter(DataSetWrite):
+
+    def writer(self, data, filename: str, output_path: str):
+        # 转换数据格式
+        file_path = f"{output_path}/{filename}"
+        output_data = []
+        for index, row in data.iterrows():
+            output_data.append({
+                "instruction": row['question'],
+                "input": "",
+                "output": row['answer'],
+                "system": ""
+            })
+        # 将转换后的数据保存为JSON文件
+        with open(file_path, 'w', encoding='utf-8') as file:
+            json.dump(output_data, file, ensure_ascii=False, indent=2)
+        return file_path
+
+
 class DataSetWriterDriver:
 
     def writer(self, type: str, data, filename: str, output_path: str):
@@ -46,6 +65,8 @@ class DataSetWriterDriver:
     def get_strategy(self, type: str) -> DataSetWrite:
         if type == "rwkv":
             return RWKVDataSetWriter()
+        elif type == "llama":
+            return LLaMADataSetWriter()
         else:
             raise ValueError("Unknown type")
 
@@ -68,8 +89,8 @@ class DataSetHandle:
 
 
 if __name__ == "__main__":
-    data_path = "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/output/新增数据集_2024-01-09-23-16-10.xlsx"
-    output_path = "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/output"
+    data_path = "/home/alan/Documents/decode/ai/virtualwife-llm-factory/output/新增数据集_2024-01-10-11-48-09.xlsx"
+    output_path = "/home/alan/Documents/decode/ai/virtualwife-llm-factory/output"
 
     # 初始化读取工具
     reader = DatasetReader()
