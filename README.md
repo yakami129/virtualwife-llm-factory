@@ -67,6 +67,10 @@ python tools.py --tool_name qa_csv2dataset_tool \
 --output_path output
 ```
 
-# workflow.py 使用示例
+# workflow.py 使用示例（开发中，暂不可用）
 
-TODO 开发中
+- 一键微调模型
+
+```shell
+export CUDA_VISIBLE_DEVICES=6 && python workflow.py --config_path config/example
+```

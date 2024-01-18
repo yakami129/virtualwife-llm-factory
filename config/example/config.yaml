@@ -1,0 +1,24 @@
+- task_id: "1"
+  finetune:
+    model_path: "models/yi-34b"
+    model_type: "llama"
+    num_train_epochs: "5"
+    learning_rate: "3e-4"
+    weight_decay: "0.1"
+  dataset:
+    ds_test_proportion: "0.2"
+    random_state: "1"
+    source_file_path: "dataset/example_dataset.xlsx"
+
+- task_id: "2"
+  finetune:
+    model_path: "models/yi-34b"
+    model_type: "llama"
+    num_train_epochs: "10"
+    learning_rate: "3e-4"
+    weight_decay: "0.1"
+  dataset:
+    ds_test_proportion: "0.1"
+    random_state: "1"
+    source_file_path: "dataset/example_dataset.xlsx"
+
