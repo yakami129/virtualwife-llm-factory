@@ -44,3 +44,5 @@ pydantic
 fastapi
 sse-starlette
 matplotlib
+faiss-cpu
+FlagEmbedding

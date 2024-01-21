@@ -67,6 +67,22 @@ python tools.py --tool_name qa_csv2dataset_tool \
 --output_path output
 ```
 
+## 示例二：gen_role_package_tool
+
+- 工具说明：
+    - 作用：生成角色安装包
+    - 用途：将角色Prompt和对话语料打包，结合RAG技术使用，具体使用方式请参考example/run_role_package.py，未来virtualwife会支持直接导入角色安装包
+- 使用示例
+
+```shell
+python tools.py --tool_name gen_role_package_tool \
+--embed_model_path models/baai/bge-large-zh-v1.5 \
+--role_name example \
+--system_prompt_path dataset/example_system_prompt.txt \
+--dataset_path dataset/example_dataset.xlsx \
+--output_path output
+```
+
 # workflow.py 使用示例（开发中，暂不可用）
 
 - 一键微调模型
