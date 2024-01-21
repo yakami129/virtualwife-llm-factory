@@ -70,6 +70,7 @@ python tools.py --tool_name qa_csv2dataset_tool \
 ## 示例二：gen_role_package_tool
 
 - 工具说明：
+    - 前置条件：在models下载模型：git clone https://huggingface.co/BAAI/bge-large-zh-v1.5
     - 作用：生成角色安装包
     - 用途：将角色Prompt和对话语料打包，结合RAG技术使用，具体使用方式请参考example/run_role_package.py，未来virtualwife会支持直接导入角色安装包
 - 使用示例
