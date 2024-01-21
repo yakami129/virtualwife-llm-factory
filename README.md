@@ -67,7 +67,7 @@ python tools.py --tool_name qa_csv2dataset_tool \
 --output_path output
 ```
 
-## 示例二：gen_role_package_tool
+## 示例三：gen_role_package_tool
 
 - 工具说明：
     - 前置条件：在models下载模型：git clone https://huggingface.co/BAAI/bge-large-zh-v1.5
