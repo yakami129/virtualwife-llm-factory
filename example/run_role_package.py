@@ -159,7 +159,7 @@ if __name__ == '__main__':
     <</SYS>>
     """
     user_name = "张三"
-    query = "张三说：医生我最近头疼"
+    query = "张三说：医生我就像是阴沟里的老鼠"
 
     # 查询对话语料
     flag_model_factory = FlagModelFactory(args)

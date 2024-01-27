@@ -11,6 +11,7 @@ from tools.qa_csv2dataset_tool import QAcsv2datasetTool
 
 logger = logging.getLogger(__name__)
 
+os.environ['TOKENIZERS_PARALLELISM'] = "false"
 
 def create_work_dir(work_dir: str) -> str:
     # 如果目录不存在，则创建目录
