@@ -8,14 +8,14 @@ openai==1.7.0
 langchain==0.1.0
 einops==0.7.0
 scipy==1.11.4
-deepspeed==0.12.6
+deepspeed==0.3.16
 openai-whisper==20230314
 torch
 ffmpeg-python~=0.2.0
 hanziconv==0.3.2
 numpy==1.26.2
 noisereduce==3.0.0
-bilibili-api-python==16.1.1
+bilibili-api-python==16.2.0
 ass==0.5.4
 pysubs2==1.6.1
 librosa==0.10.1
