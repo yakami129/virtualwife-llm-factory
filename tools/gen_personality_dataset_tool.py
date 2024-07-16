@@ -28,42 +28,44 @@ class GenPersonalityDatasetTool:
     def run(self, args: Optional[dict], **kwargs):
         personality_dataset_path = args["personality_dataset_path"]
         output_path = args["output_path"]
-        openness = args["openness"]
-        level = args["level"]
+        openness_levels = args["openness"].split(',')  # 分割openness参数为多个组合
 
         with open(personality_dataset_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
-
-        key = f"{openness}-{level}"
-        dataset = data.get(key, [])
 
         # 准备数据列表，用于之后转换为DataFrame
         data_list = []
         qa_index = 0  # 初始化问题和答案对的下标
 
-        for item in dataset:
-            # 移除文本中的「和」字符
-            item = item.replace('「', '').replace('」', '')
-            segments = item.split('\n')
-            question = None  # 初始化问题变量
-            for segment in segments:
-                if segment.startswith("Q:"):
-                    question = segment[2:].strip()
-                elif segment.startswith("A:"):
-                    answer = segment[2:].strip()
-                    if question:  # 确保有对应的问题
-                        # 将数据添加到列表
-                        data_list.append(
-                            {'index': qa_index, 'question': question, 'answer': answer, 'openness': openness,
-                             'level': level})
-                        qa_index += 1  # 更新下标
+        for openness_level in openness_levels:
+
+            # 分割每个openness和level组合
+            openness, level = openness_level.split('-')
+            key = f"{openness}-{level}"
+            dataset = data.get(key, [])
+
+            for item in dataset:
+                # 移除文本中的「和」字符
+                item = item.replace('「', '').replace('」', '')
+                segments = item.split('\n')
+                question = None  # 初始化问题变量
+                for segment in segments:
+                    if segment.startswith("Q:"):
+                        question = segment[2:].strip()
+                    elif segment.startswith("A:"):
+                        answer = segment[2:].strip()
+                        if question:  # 确保有对应的问题
+                            # 将数据添加到列表
+                            data_list.append(
+                                {'index': qa_index, 'question': question, 'answer': answer, 'openness': openness,
+                                 'level': level})
+                            qa_index += 1  # 更新下标
 
         # 将数据列表转换为DataFrame
         df = pd.DataFrame(data_list)
 
-        # 使用 os.path.join 来构建完整的输出路径，确保兼容不同操作系统的路径分隔符
         # 动态生成文件名并与基础路径结合
-        output_file_name = f"pd-{openness}-{level}.xlsx"
+        output_file_name = f"pd-dataset.xlsx"
         full_output_path = os.path.join(output_path, output_file_name)
 
         # 写入XLSX文件
@@ -75,8 +77,7 @@ if __name__ == "__main__":
     tool = GenPersonalityDatasetTool()
     args = {
         "personality_dataset_path": "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/dataset/personality_dataset.json",
-        "output_path": "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/dataset",
-        "openness": "actions",
-        "level": "high"
+        "output_path": "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/output/pd",
+        "openness": "feelings-high,ideas-high,values-high"
     }
     dataset = tool.run(args)
