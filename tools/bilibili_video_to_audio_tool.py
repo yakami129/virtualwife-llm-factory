@@ -1,15 +1,19 @@
 import asyncio
 import http
 import os
-import traceback
+import subprocess
 import types
 import uuid
 
 import httpx
 from bilibili_api import Credential, video, HEADERS
 
+from tools.framework.vocal_separation.video_process import separate_vocals
+
 from .framework.video_to_csv.srt2csv import srt2csv
 from .framework.video_to_csv.video_to_text import run_whisper, Video2Subtitles
+
+import pysrt
 
 
 def generate():
@@ -19,6 +23,15 @@ def generate():
     uuid_str = str(uuid.uuid4())
     uuid_str = uuid_str.replace("-", "")
     return uuid_str
+
+
+def extract_audio(mp4_file, output_dir):
+    # 生成输出文件路径
+    output_file = f"{output_dir}/audio.wav"
+    # 使用ffmpeg将视频转换为WAV格式音频
+    command = f"ffmpeg -i {mp4_file} -vn -acodec pcm_s16le -ar 44100 -ac 2 {output_file}"
+    subprocess.run(command, shell=True)
+    return output_file
 
 
 class BiliBiliVideoDownload:
@@ -51,7 +64,8 @@ class BiliBiliVideoDownload:
         FFMPEG_PATH = "ffmpeg"
 
         # 实例化 Credential 类
-        credential = Credential(sessdata=SESSDATA, bili_jct=BILI_JCT, buvid3=BUVID3)
+        credential = Credential(
+            sessdata=SESSDATA, bili_jct=BILI_JCT, buvid3=BUVID3)
         # 实例化 Video 类
         v = video.Video(bvid=video_id, credential=credential)
         # 获取视频下载链接
@@ -95,7 +109,7 @@ class BiliBiliVideoDownload:
                     f.write(chunk)
 
 
-class BiliBiliVideo2CsvTool:
+class BiliBiliVideo2AudioTool:
     video_download: BiliBiliVideoDownload
     video2subtitles: Video2Subtitles
 
@@ -112,40 +126,29 @@ class BiliBiliVideo2CsvTool:
         output_path = args["output_path"]
 
         # 批量下载bilibili视频
-        video_file_paths = self.video_download.batch_download(video_ids, bilibili_cookie, output_path)
+        video_file_paths = self.video_download.batch_download(
+            video_ids, bilibili_cookie, output_path)
 
-        # 批量将视频转换为字幕文件
-        srt_file_paths = []
         for video_file_path in video_file_paths:
-            args = {
-                "verbose": "verbose",
-                "input_video": video_file_path,
-                "srt_folder": output_path
-            }
-            args = types.SimpleNamespace(**args)
-            srt_file_path = run_whisper(self.video2subtitles, args)
-            srt_file_paths.append(srt_file_path)
 
-        # 批量将字幕文件转换为csv
-        for srt_file_path in srt_file_paths:
-            args = {
-                "verbose": "verbose",
-                "input_srt": srt_file_path,
-                "srt_folder": output_path
-            }
-            args = types.SimpleNamespace(**args)
+            # 获取MP4名称，不包含扩展名
+            basename = os.path.splitext(os.path.basename(video_file_path))[0]
+            audio_dir_path = os.path.join(output_path, basename, "audio")
 
-            try:
-                srt2csv(args)
-            except:
-                traceback.print_exception()
+            # 创建目录
+            os.makedirs(audio_dir_path, exist_ok=True)
 
+            # 提取音频
+            print("======================== 提取 音频 ======================== ")
+            audio_file_path = extract_audio(
+                video_file_path, audio_dir_path)
 
-if __name__ == '__main__':
-    args = {
-        "video_ids": "BV1AC4y1U77e",
-        "bilibili_cookie": "buvid4=34DB59A6-47D1-B3DC-953E-0E39DB1D2E1655624-023101921-ksPq5hUPXVm6%2BOFFmBjPRg%3D%3D; buvid_fp_plain=undefined; enable_web_push=DISABLE; header_theme_version=CLOSE; CURRENT_BLACKGAP=0; _uuid=B43613CB-D72B-839F-2108E-E7962CD10BBAC03668infoc; hit-dyn-v2=1; home_feed_column=5; buvid3=A0E99412-2F6B-9261-C5A6-EFB2D4568E2F97438infoc; b_nut=1732413697; rpdid=|(umu)ul|lml0J'u~JkRuJ)m); DedeUserID=382957163; DedeUserID__ckMd5=537234e3cc45dfda; LIVE_BUVID=AUTO1017331504227621; fingerprint=65a3553cbda12db958eb605567d21737; buvid_fp=65a3553cbda12db958eb605567d21737; CURRENT_QUALITY=80; enable_feed_channel=ENABLE; SESSDATA=a8cc00fd%2C1764736607%2C5b90f%2A62CjA9HNEB_t4ir2-kumXomLTuY_ZwEU5UeKdw7Afb7Mlq-6o0fKxpVdG_IxD0JCJcSGMSVm10OTloMUpjb1haaV9Ga2lpMk9wS0lWd29BeHJyckkxZnFxLThRUTJEcng0M0pHS2NqaS1hNkc3OVNPekhvMHB4WHA0VkUwQU5jclZXYVVuaXpDMU9nIIEC; bili_jct=569089d70a862e0b6546464f6b5eb800; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk1NjE2MDcsImlhdCI6MTc0OTMwMjM0NywicGx0IjotMX0.SKAaOBJkCCXlq4v8py2nudszbObC93cHVYOzrMHaD8s; bili_ticket_expires=1749561547; sid=6uoltlfo; b_lsid=7D1EEAEA_1974E95B17D; PVID=1; bp_t_offset_382957163=1076035035888353280; CURRENT_FNVAL=4048; browser_resolution=1680-463",
-        "output_path": "/Users/zhangyajun/Documents/CodeWorkSpace/skyjun/virtualwife-llm-factory/output"
-    }
-    video2csv = BiliBiliVideo2CsvTool()
-    video2csv.run(args)
+            # 人声音频路径和背景音路径
+            output_vocal_dir = os.path.join(output_path, basename, "vocal")
+            output_instrumental_dir = os.path.join(
+                output_path, basename, "inst")
+
+            # 分离人声
+            print("======================== 分离 人声 ======================== ")
+            separate_vocals(audio_file_path, output_vocal_dir,
+                            output_instrumental_dir)

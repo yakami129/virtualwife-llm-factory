@@ -18,7 +18,12 @@ try:
     import whisper
 except ImportError:
     print("check requirements: video_to_text/requirements_run_whisper.txt")
-DEVICE = torch.device("cuda")
+    raise
+
+# 更安全的设备初始化
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {DEVICE}")
+
 from hanziconv import HanziConv
 from subprocess import CalledProcessError, run
 import numpy as np
@@ -29,10 +34,14 @@ TRANSCRIBE_MODE = ' '  # TRANSCRIBE_MODE = 'noisereduce'
 
 class Video2Subtitles(object):
     def __init__(self):
-        MODEL_WHISPER = "medium"  # or your local model_path
+        MODEL_WHISPER = "small"  # or your local model_path
         WHISPER_MODELS = ["tiny", "base", "small", "medium", "large-v1", "large-v2"]
         print("---loading model in your local path or downloading now---")
-        self.model = whisper.load_model(MODEL_WHISPER)
+        try:
+            self.model = whisper.load_model(MODEL_WHISPER, device=DEVICE)
+        except Exception as e:
+            print(f"Error loading model: {e}")
+            raise
 
     def srt_format_timestamp(self, seconds: float):
         assert seconds >= 0, "non-negative timestamp expected"
@@ -73,30 +82,34 @@ class Video2Subtitles(object):
         subtitle_format = "srt"
         lang = "zh"
         verbose = True
-        DEVICE = torch.cuda.is_available()
-        model = self.model
         input_video_ = input_video if isinstance(input_video, str) else input_video.name
-        if TRANSCRIBE_MODE == 'noisereduce':
-            audio = self.audio_denoise(input_video_)
-        else:
-            audio = input_video_
-        result = model.transcribe(
-            audio=audio,
-            task="transcribe",
-            language=lang,
-            verbose=verbose,
-            initial_prompt=None,
-            word_timestamps=True,
-            no_speech_threshold=0.95,
-            fp16=DEVICE
-        )
-        os.makedirs(srt_folder, exist_ok=True)
-        subtitle_file = srt_folder + "/" + pathlib.Path(input_video).stem + "." + subtitle_format
-        if subtitle_format == "srt":
-            with open(subtitle_file, "w") as srt:
-                self.write_srt(result["segments"], file=srt)
-        print("\nsubtitle_file:", subtitle_file, "\n")
-        return subtitle_file
+        try:
+            if TRANSCRIBE_MODE == 'noisereduce':
+                audio = self.audio_denoise(input_video_)
+            else:
+                audio = input_video_
+            
+            result = self.model.transcribe(
+                audio=audio,
+                task="transcribe",
+                language=lang,
+                verbose=verbose,
+                initial_prompt=None,
+                word_timestamps=True,
+                no_speech_threshold=0.95,
+                fp16=DEVICE.type == "cuda"
+            )
+            
+            os.makedirs(srt_folder, exist_ok=True)
+            subtitle_file = srt_folder + "/" + pathlib.Path(input_video).stem + "." + subtitle_format
+            if subtitle_format == "srt":
+                with open(subtitle_file, "w") as srt:
+                    self.write_srt(result["segments"], file=srt)
+            print("\nsubtitle_file:", subtitle_file, "\n")
+            return subtitle_file
+        except Exception as e:
+            print(f"Error during transcription: {e}")
+            raise
 
     def load_audio(self, file: str, sr: int = SAMPLE_RATE):
         """
@@ -137,23 +150,27 @@ class Video2Subtitles(object):
 
 
 def run_whisper(video2subtitles: Video2Subtitles, args):
-    if args.verbose:
-        print('runing whisper')
+    try:
+        if args.verbose:
+            print('running whisper')
 
-    # checking if input_video is a file
-    if not os.path.isfile(args.input_video):
-        print('input_video is not exist')
-        return
+        # checking if input_video is a file
+        if not os.path.isfile(args.input_video):
+            print('input_video is not exist')
+            return
 
-    # checking if srt_folder is a folder
-    if not os.path.isdir(args.srt_folder):
-        print('warning srt_folder is not exist')
-        # create srt_folder
-        os.mkdir(args.srt_folder)
-        print('create folder', args.srt_folder)
+        # checking if srt_folder is a folder
+        if not os.path.isdir(args.srt_folder):
+            print('warning srt_folder is not exist')
+            # create srt_folder
+            os.makedirs(args.srt_folder, exist_ok=True)
+            print('create folder', args.srt_folder)
 
-    # run whisper
-    input_file = args.input_video
-    srt_folder = args.srt_folder
-    result = video2subtitles.transcribe(input_file, srt_folder)
-    return result
+        # run whisper
+        input_file = args.input_video
+        srt_folder = args.srt_folder
+        result = video2subtitles.transcribe(input_file, srt_folder)
+        return result
+    except Exception as e:
+        print(f"Error in run_whisper: {e}")
+        raise

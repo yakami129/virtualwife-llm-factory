@@ -4,6 +4,7 @@ import os
 import traceback
 from typing import Optional
 
+from tools.bilibili_video_to_audio_tool import BiliBiliVideo2AudioTool
 from tools.bilibili_video_to_csv_tool import BiliBiliVideo2CsvTool
 from tools.gen_dataset import GenerateDataset
 from tools.gen_role_package_tool import GenRolePackageTool
@@ -12,6 +13,7 @@ from tools.qa_csv2dataset_tool import QAcsv2datasetTool
 logger = logging.getLogger(__name__)
 
 os.environ['TOKENIZERS_PARALLELISM'] = "false"
+
 
 def create_work_dir(work_dir: str) -> str:
     # 如果目录不存在，则创建目录
@@ -99,6 +101,10 @@ def init_bilibili_video_to_csv_tool(config: Optional[dict], output_path: str):
     return BiliBiliVideo2CsvTool()
 
 
+def init_bilibili_video_to_audio_tool(config: Optional[dict], output_path: str):
+    return BiliBiliVideo2AudioTool()
+
+
 def init_qa_csv2dataset_tool(config: Optional[dict], output_path: str):
     return QAcsv2datasetTool()
 
@@ -125,6 +131,8 @@ if __name__ == "__main__":
             tool = init_gen_dataset_tool(config, output_path)
         elif tool_name == 'bilibili_video_to_csv':
             tool = init_bilibili_video_to_csv_tool(config, output_path)
+        elif tool_name == "bilibili_video_to_audio":
+            tool = init_bilibili_video_to_audio_tool(config, output_path)
         elif tool_name == 'qa_csv2dataset_tool':
             tool = init_qa_csv2dataset_tool(config, output_path)
         elif tool_name == 'gen_role_package_tool':
