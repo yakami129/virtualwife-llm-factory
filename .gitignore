@@ -253,3 +253,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+dataset/**
+output/**
+.idea/.gitignore
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/virtualwife-llm-factory.iml
+.idea/inspectionProfiles/profiles_settings.xml
+.DS_Store
