@@ -116,9 +116,15 @@ def internalise(lines, keep_japanese):
 # read srt file
 def read_srt(input_file):
     try:
-        file1 = open(input_file, 'r', encoding='utf-8')
-        lines = file1.readlines()
-        file1.close()
+        with open(input_file, 'r', encoding='utf-8') as file1:
+            lines = file1.readlines()
+    except UnicodeDecodeError:
+        try:
+            with open(input_file, 'r', encoding='gbk') as file1:
+                lines = file1.readlines()
+        except UnicodeDecodeError:
+            with open(input_file, 'r', encoding='utf-8', errors='ignore') as file1:
+                lines = file1.readlines()
     except Exception as error:
         print(error)
         exit()
