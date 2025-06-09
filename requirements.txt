@@ -46,3 +46,4 @@ sse-starlette
 matplotlib
 faiss-cpu
 FlagEmbedding
+httpx[socks]
