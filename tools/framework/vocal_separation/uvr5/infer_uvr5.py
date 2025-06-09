@@ -40,7 +40,7 @@ class _audio_pre_:
         self.mp = mp
         self.model = model
 
-    def _path_audio_(self, music_file, ins_root=None, vocal_root=None, format="flac"):
+    def _path_audio_(self, music_file, vocal_root=None, ins_root=None, format="flac"):
         """
             处理音频
         :param music_file:

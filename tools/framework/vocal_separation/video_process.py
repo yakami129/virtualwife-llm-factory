@@ -38,7 +38,7 @@ def separate_vocals(
 
     # Run vocal separation
     vocal_path, instrumental_path = uvr_prediction(
-        model_name=uvr5_names[0],
+        model_name="VR-DeEchoNormal",
         inp_path=input_file,
         save_root_vocal=output_vocal_dir,
         save_root_ins=output_instrumental_dir,
