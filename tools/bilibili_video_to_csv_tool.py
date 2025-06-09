@@ -1,6 +1,7 @@
 import asyncio
 import http
 import os
+import traceback
 import types
 import uuid
 
@@ -133,7 +134,11 @@ class BiliBiliVideo2CsvTool:
                 "srt_folder": output_path
             }
             args = types.SimpleNamespace(**args)
-            srt2csv(args)
+
+            try:
+                srt2csv(args)
+            except:
+                traceback.print_exception()
 
 
 if __name__ == '__main__':
